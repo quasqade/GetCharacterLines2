@@ -3,27 +3,41 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Characters {
-    private Map<InternalCharName, Character> charList;
+    private Map<Character, String> charList;
 
     public Characters()
     {
         charList=new HashMap();
-        charList.put(InternalCharName.NAEGI, new Character(InternalCharName.NAEGI, "Makoto Naegi"));
-        charList.put(InternalCharName.ISHIMARU, new Character(InternalCharName.ISHIMARU, "Kiyotaka Ishimaru"));
-        charList.put(InternalCharName.TOGAMI, new Character(InternalCharName.TOGAMI, "Byakuya Togami"));
-        charList.put(InternalCharName.OOWADA, new Character(InternalCharName.OOWADA, "Mondo Oowada"));
-		charList.put(InternalCharName.KUWATA, new Character(InternalCharName.KUWATA, "Leon Kuwata"));
-		charList.put(InternalCharName.YAMADA, new Character(InternalCharName.YAMADA, "Hifumi Yamada"));
-		charList.put(InternalCharName.HAGAKURE, new Character(InternalCharName.HAGAKURE, "Yasuhiro Hagakure"));
-		charList.put(InternalCharName.MAIZONO, new Character(InternalCharName.MAIZONO, "Sayaka Maizono"));
-		charList.put(InternalCharName.KIRIGIRI, new Character(InternalCharName.KIRIGIRI, "Kyouko Kirigiri"));
-		charList.put(InternalCharName.ASAHINA, new Character(InternalCharName.ASAHINA, "Aoi Asahina"));
-		charList.put(InternalCharName.FUKAWA, new Character(InternalCharName.FUKAWA, "Touko Fukawa"));
+        charList.put(Character.NAEGI, "Makoto Naegi");
+        charList.put(Character.ISHIMARU, "Kiyotaka Ishimaru");
+        charList.put(Character.TOGAMI, "Byakuya Togami");
+        charList.put(Character.OOWADA, "Mondo Oowada");
+		charList.put(Character.KUWATA,  "Leon Kuwata");
+		charList.put(Character.YAMADA,  "Hifumi Yamada");
+		charList.put(Character.HAGAKURE,  "Yasuhiro Hagakure");
+		charList.put(Character.MAIZONO, "Sayaka Maizono");
+		charList.put(Character.KIRIGIRI,  "Kyouko Kirigiri");
+		charList.put(Character.ASAHINA,  "Aoi Asahina");
+		charList.put(Character.FUKAWA, "Touko Fukawa");
         //TODO add others
     }
 
-    public Character get(InternalCharName internalCharName)
+    public String get(Character character)
     {
-        return charList.get(internalCharName);
+        return charList.get(character);
     }
+
+    public Character get(String externalName)
+	{
+		for (Character internalName: Character.values()
+			 )
+		{
+			if (charList.containsKey(internalName))
+			if (charList.get(internalName).equals(externalName))
+			{
+				return internalName;
+			}
+		}
+		return Character.NO_NAME;
+	}
 }

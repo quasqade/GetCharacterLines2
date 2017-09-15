@@ -7,7 +7,7 @@ package logic;
 public class Block
 {
 	public String text;
-	public InternalCharName character;
+	public Character character;
 	public boolean isVoiced;
 	public String voiceFile="";
 	public boolean isGeneric;

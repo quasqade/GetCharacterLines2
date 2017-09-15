@@ -1,6 +1,7 @@
+import logic.Chapter;
 import logic.Chapters;
 import logic.Characters;
-import logic.InternalCharName;
+import logic.Character;
 
 import java.io.*;
 
@@ -31,8 +32,8 @@ public static void main (String[] args)
 	if (character.equals(""))
 		return;
 
-	File file = new File(args[0]);
-	String str = logic.DumpProcessor.processDump(file, characters.get(InternalCharName.NAEGI), null, false, false);
+	File file = new File("ru_dump.txt");
+	String str = logic.DumpProcessor.processDump(file, Character.NAEGI, Chapter.CHAPTER1, true, false, 1, 1, file, true);
 
 	File theDir = new File("./output");
 

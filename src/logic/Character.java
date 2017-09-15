@@ -1,12 +1,34 @@
 package logic;
 
-public class Character {
-public InternalCharName internalName;
-public String externalName;
-
-public Character(InternalCharName internalName, String externalName)
+public enum Character
 {
-    this.internalName=internalName;
-    this.externalName=externalName;
-}
+    NAEGI,
+    ISHIMARU,
+    TOGAMI,
+    OOWADA,
+	KUWATA,
+	YAMADA,
+	HAGAKURE,
+	MAIZONO,
+	KIRIGIRI,
+	ASAHINA,
+	FUKAWA,
+	OOGAMI,
+	CELES,
+	ENOSHIMA,
+	FUJISAKI,
+	MONOKUMA,
+	ENOSHIMA_REAL,
+	ALTER_EGO,
+	GENOCIDER,
+	HEADMASTER,
+	NAEGI_MOTHER,
+	NAEGI_FATHER,
+	NAEGI_SISTER,
+	ISHIMARU_OOWADA,
+	DAIA_OOWADA,
+	LAST_SPRITE,
+	NO_NAME,
+	NARRATION,
+	EVERYBODY //If only need to clean dump
 }

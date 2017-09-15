@@ -14,6 +14,7 @@ public class DumpProcessor {
         List<String> textBlocks = new ArrayList();
 
         ChapterMap chapterMap = new ChapterMap();
+        Characters characters = new Characters();
 
 
         try
@@ -47,6 +48,7 @@ public class DumpProcessor {
 		Chapter currentChapter = Chapter.UNKNOWN;
 
 		//Gather info about blocks and write it into a new list of Block objects
+		//TODO parse character
 		for (String block: textBlocks)
 		{
 			if (block.matches("(===|\\*\\*\\*)(.|\\n)*"))
@@ -66,6 +68,16 @@ public class DumpProcessor {
 				customBlock.text=block;
 				customBlock.chapter = currentChapter;
 
+				//Determine character
+				Pattern patternChar = Pattern.compile("\\[.*\\]\\n");
+				Matcher matcherChar = patternChar.matcher(block);
+				if (matcherChar.find())
+				{
+					String s = matcherChar.group(0);
+					s = s.substring(1, s.length()-2);
+					customBlock.character=characters.get(s);
+				}
+
 				//Determine if voiced
 				Pattern patternVoice = Pattern.compile("\\[Voice: [0-9]*.at3.*\\]\\n");
 				Matcher matcherVoice = patternVoice.matcher(block);
@@ -73,7 +85,7 @@ public class DumpProcessor {
 				{
 
 					customBlock.isVoiced=true;
-					String s = matcherVoice.group();
+					String s = matcherVoice.group(0);
 
 
 					//If voiced, determine voice ID
@@ -143,11 +155,12 @@ public class DumpProcessor {
 				String s = blocks.get(id).text;
 				s = s.replaceAll(" \\(Generic\\)", "");
 				blocks.get(id).text = s;
+				blocks.get(id).isGeneric=false;
 			}
 
 		}
-
-        List<Block>toBeDeleted = new ArrayList<>();
+		blocks.size();
+       /* List<Block>toBeDeleted = new ArrayList<>();
         boolean isSequentialLine=false;
         List<String> sequentialBlocks = new ArrayList<>();
         for (Block block: blocks
@@ -186,8 +199,9 @@ public class DumpProcessor {
             }
         }
 
-        blocks.removeAll(toBeDeleted);
+        blocks.removeAll(toBeDeleted);*/
 
+       /*
         List<String> output = new ArrayList<String>();
         for (String block: blocks
                 )
@@ -233,11 +247,13 @@ public class DumpProcessor {
         }
 
         return sb.toString();
+        */
+       return null;
     }
 
-    public static boolean isCharacterBlock(String block, Character character)
+    public static boolean isCharacterBlock(String block, String character)
     {
-        Matcher m = Pattern.compile("(\\[" + character.externalName + "\\])(\\n)(\\[Voice: [0-9]*.at3.*?\\])").matcher(block);
+        Matcher m = Pattern.compile("(\\[" + character + "\\])(\\n)(\\[Voice: [0-9]*.at3.*?\\])").matcher(block);
         return m.find();
     }
     public static String stripTxt(String block)
