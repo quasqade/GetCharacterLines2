@@ -87,7 +87,9 @@ public class Chapters {
 
     public List<Chapter> get(Chapter chapter)
     {
+        if (map.containsKey(chapter))
         return map.get(chapter);
+        return null;
     }
 
     public boolean containsSubchapters(Chapter chapter)
