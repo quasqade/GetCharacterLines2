@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DumpProcessor {
-    public static String processDump(File inputFile, String character)
+    public static String processDump(File inputFile, Character character, List<Chapter> chapters, boolean cleanGenerics, boolean ignoreGenerics)
     {
         StringBuilder sb = new StringBuilder("");
         List<String> blocks = new ArrayList();
@@ -204,9 +204,9 @@ public class DumpProcessor {
         return sb.toString();
     }
 
-    public static boolean isCharacterBlock(String block, String character)
+    public static boolean isCharacterBlock(String block, Character character)
     {
-        Matcher m = Pattern.compile("(\\[" + character + "\\])(\\n)(\\[Voice: [0-9]*.at3.*?\\])").matcher(block);
+        Matcher m = Pattern.compile("(\\[" + character.externalName + "\\])(\\n)(\\[Voice: [0-9]*.at3.*?\\])").matcher(block);
         return m.find();
     }
     public static String stripTxt(String block)

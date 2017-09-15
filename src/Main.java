@@ -1,3 +1,6 @@
+import logic.Characters;
+import logic.InternalCharName;
+
 import java.io.*;
 
 /**
@@ -7,6 +10,7 @@ public class Main
 {
 public static void main (String[] args)
 {
+	Characters characters = new Characters();
 	File characterFile = new File("character.txt");
 	String character = "";
 	try
@@ -24,8 +28,8 @@ public static void main (String[] args)
 	if (character.equals(""))
 		return;
 
-	File file = new Fiple(args[0]);
-	String str = logic.DumpProcessor.processDump(file, character);
+	File file = new File(args[0]);
+	String str = logic.DumpProcessor.processDump(file, characters.get(InternalCharName.NAEGI), null, false, false);
 
 	File theDir = new File("./output");
 
