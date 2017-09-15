@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DumpProcessor {
-    public static String processDump(File inputFile, Character character, List<Chapter> chapters, boolean cleanGenerics, boolean ignoreGenerics)
+    public static String processDump(File inputFile, Character character, Chapter chapter, boolean cleanGenerics, boolean ignoreGenerics, int contextBefore, int contextAfter, File outputFile)
     {
         StringBuilder sb = new StringBuilder("");
         List<String> blocks = new ArrayList();
