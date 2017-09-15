@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DumpProcessor {
-    public static String processDump(File inputFile, Character character, Chapter chapter, boolean cleanGenerics, boolean ignoreGenerics, int contextBefore, int contextAfter, File outputFile, boolean fixOffset, boolean onlyVoiced, int maximumSpacing)
+    public static String processDump(File inputFile, Character character, Chapter chapter, boolean cleanGenerics, boolean ignoreGenerics, int contextBefore, int contextAfter, boolean fixOffset, boolean onlyVoiced, int maximumSpacing)
     {
         StringBuilder sb = new StringBuilder("");
         List<String> textBlocks = new ArrayList();
@@ -51,7 +51,6 @@ public class DumpProcessor {
 		Chapter currentChapter = Chapter.UNKNOWN;
 
 		//Gather info about blocks and write it into a new list of Block objects
-		//TODO parse character
 		for (String block: textBlocks)
 		{
 			if (block.matches("(===|\\*\\*\\*)(.|\\n)*"))
@@ -74,10 +73,15 @@ public class DumpProcessor {
 				//Determine character
 				Pattern patternChar = Pattern.compile("\\[.*\\]\\n");
 				Matcher matcherChar = patternChar.matcher(block);
-				if (matcherChar.find())
+				while (matcherChar.find())
 				{
-					String s = matcherChar.group(0);
+					String s = matcherChar.group(matcherChar.groupCount());
 					s = s.substring(1, s.length()-2);
+					if (characters.contains(s))
+					{
+						customBlock.character=characters.get(s);
+						break;
+					}
 					customBlock.character=characters.get(s);
 				}
 
@@ -172,6 +176,7 @@ public class DumpProcessor {
 		for (Block block: blocks
 			 )
 		{
+			block.text=stripTxt(block.text);
 			if (!block.character.equals(character) && !character.equals(Character.EVERYBODY))
 			{
 				continue;
@@ -258,103 +263,9 @@ public class DumpProcessor {
 			}
 		}
 
-		sb.toString();
-       /* List<Block>toBeDeleted = new ArrayList<>();
-        boolean isSequentialLine=false;
-        List<String> sequentialBlocks = new ArrayList<>();
-        for (Block block: blocks
-                )
-        {
-            if (isCharacterBlock(block, character))
-            {
-                if (!isSequentialLine)
-                {
-                    sequentialBlocks=new ArrayList<>();
-                    isSequentialLine=true;
-                    sequentialBlocks.add(block);
-                }
-                else
-                {
-                    sequentialBlocks.add(block);
-                }
-            }
-            else
-            {
-                if (isSequentialLine)
-                {
-                    isSequentialLine=false;
-                    StringBuilder seqSB = new StringBuilder();
-                    for (String sequentialBlock: sequentialBlocks
-                            )
-                    {
-                        seqSB.append(sequentialBlock);
-                    }
-                    if (sequentialBlocks.size()>1)
-                    {
-                        toBeDeleted.addAll(sequentialBlocks);
-                        blocks.set(blocks.indexOf(block) - 1, seqSB.toString());
-                    }
-                }
-            }
-        }
-
-        blocks.removeAll(toBeDeleted);*/
-
-       /*
-        List<String> output = new ArrayList<String>();
-        for (String block: blocks
-                )
-        {
-
-            if (isCharacterBlock(block, character))
-            {
-
-                if (blocks.indexOf(block)>1)
-                {
-                    if(!toBeDeleted.contains(blocks.get(blocks.indexOf(block)-2)))
-                        output.add(blocks.get(blocks.indexOf(block)-2));
-                }
-                if (blocks.indexOf(block)>0)
-                {
-                    if(!toBeDeleted.contains(blocks.get(blocks.indexOf(block)-1)))
-                        output.add(blocks.get(blocks.indexOf(block)-1));
-                }
-                output.add("\n********************\n");
-                output.add(block);
-                output.add("********************\n\n");
-                if (blocks.indexOf(block)!=blocks.size()-1)
-                {
-                    if(!toBeDeleted.contains(blocks.get(blocks.indexOf(block)+1)))
-                        output.add(blocks.get(blocks.indexOf(block)+1));
-                }
-                output.add("------------------------------------------------------------\n");
-            }
-        }
-
-        sb = new StringBuilder();
-
-        for (String outblock: output
-                )
-        {
-            String outblockStripped = outblock;
-            if (!isCharacterBlock(outblock, character))
-            {
-                outblockStripped = stripVoice(outblockStripped);
-            }
-            outblockStripped = stripTxt(outblockStripped);
-            sb.append(outblockStripped);
-        }
-
-        return sb.toString();
-        */
-       return null;
+       return sb.toString();
     }
 
-    public static boolean isCharacterBlock(String block, String character)
-    {
-        Matcher m = Pattern.compile("(\\[" + character + "\\])(\\n)(\\[Voice: [0-9]*.at3.*?\\])").matcher(block);
-        return m.find();
-    }
     public static String stripTxt(String block)
     {
         return block.replaceAll("\\[.*?.txt\\]\n","");

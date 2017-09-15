@@ -42,4 +42,9 @@ public class Characters {
 		}
 		return Character.NO_NAME;
 	}
+
+	public boolean contains (String externalName)
+	{
+		return charList.containsValue(externalName);
+	}
 }

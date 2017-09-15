@@ -16,7 +16,7 @@ public static void main (String[] args)
 	Chapters chapters = new Chapters();
 
 	File file = new File("ru_dump.txt");
-	String str = logic.DumpProcessor.processDump(file, Character.NAEGI, Chapter.CHAPTER1_TRIAL, true, true, 1, 1, file, true, true, 1);
+	String str = logic.DumpProcessor.processDump(file, Character.NAEGI, Chapter.CHAPTER1_TRIAL, true, true, 1, 1, true, true, 1);
 
 	File outFile = new File("output.txt");
 
