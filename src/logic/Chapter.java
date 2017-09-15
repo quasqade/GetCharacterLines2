@@ -30,10 +30,5 @@ public enum Chapter {
                 CHAPTER6_TRIAL,
             EPILOGUE,
         FTE,
-            FTE1,
-            FTE2,
-            FTE3,
-            FTE4,
-            FTE5,
-            FTE6 //TODO check
+        UNKNOWN//TODO check
 }

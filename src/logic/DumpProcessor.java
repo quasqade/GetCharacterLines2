@@ -3,42 +3,36 @@ package logic;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DumpProcessor {
-    public static String processDump(File inputFile, Character character, Chapter chapter, boolean cleanGenerics, boolean ignoreGenerics, int contextBefore, int contextAfter, File outputFile)
+    public static String processDump(File inputFile, Character character, Chapter chapter, boolean cleanGenerics, boolean ignoreGenerics, int contextBefore, int contextAfter, File outputFile, boolean fixOffset)
     {
         StringBuilder sb = new StringBuilder("");
-        List<String> blocks = new ArrayList();
+        List<String> textBlocks = new ArrayList();
+
+        ChapterMap chapterMap = new ChapterMap();
+
 
         try
         {
+        	//Open file for reading
             BufferedReader br = new BufferedReader(new FileReader(inputFile));
+
+            //Read file and split in blocks
             String line;
-            boolean selectingStrings = false;
             while ((line = br.readLine()) != null)
             {
                 if (!line.equals(""))
                 {
-                    Pattern p = Pattern.compile("([0-9]*).at3");
-                    Matcher matcher = p.matcher(line);
-                    if (matcher.find())
-                    {
-                        int i = Integer.parseInt(matcher.group(1));
-                        int j = i;
-                        line = line.replaceAll(Integer.toString(i), Integer.toString(j));
-                    }
                     sb.append(line);
                     sb.append("\n");
                 }
                 else
                 {
-                    blocks.add(sb.toString());
+                    textBlocks.add(sb.toString());
                     sb = new StringBuilder();
                 }
             }
@@ -47,79 +41,116 @@ public class DumpProcessor {
             e.printStackTrace();
         }
 
-        Set<String> genericVoiceovers = new HashSet<>();
-        Set<String> genericDuplicates = new HashSet<>();
-
-        List<String> toBeDeleted = new ArrayList<>();
-
-        for (String block: blocks
-                )
-        {
-            if (block.matches("(===|\\*\\*\\*)(.|\\n)*"))
-            {
-                toBeDeleted.add(block);
-            }
-            else
-            {
-                Pattern p = Pattern.compile("\\[Voice: [0-9]*.at3 \\(Generic\\)\\]\\n");
-                Matcher m = p.matcher(block);
-                if (m.find())
-                {
-                    String s = m.group();
-                    Pattern pattern = Pattern.compile("[0-9]+");
-                    Matcher matcher = pattern.matcher(s);
-                    if (matcher.find())
-                    {
-                        String voiceID = matcher.group(0);
-                        if (!genericVoiceovers.add(voiceID))
-                        {
-                            genericDuplicates.add(voiceID);
-                        }
-                    }
-                }
-            }
-        }
-
-        List uniqueGenerics = new ArrayList(genericVoiceovers);
-        uniqueGenerics.removeAll(genericDuplicates);
+		List<Block> blocks = new ArrayList<>();
 
 
-        blocks.removeAll(toBeDeleted);
+		Chapter currentChapter = Chapter.UNKNOWN;
 
-        List<Integer> uniqueGenericIDs = new ArrayList<>();
+		//Gather info about blocks and write it into a new list of Block objects
+		for (String block: textBlocks)
+		{
+			if (block.matches("(===|\\*\\*\\*)(.|\\n)*"))
+			{
+				Pattern patternLin = Pattern.compile("[^ ]+\\.lin");
+				Matcher matcherLin = patternLin.matcher(block);
+				if (matcherLin.find())
+				{
+					String lin = matcherLin.group();
+					currentChapter = chapterMap.get(lin);
+				}
+			}
+			else
+			{
+				Block customBlock = new Block();
 
-        for (int i = 0; i<blocks.size(); i++)
-        {
-            Pattern p = Pattern.compile("\\[Voice: [0-9]*.at3 \\(Generic\\)\\]\\n");
-            Matcher m = p.matcher(blocks.get(i));
-            if (m.find())
-            {
-                String s = m.group();
-                Pattern pattern = Pattern.compile("[0-9]+");
-                Matcher matcher = pattern.matcher(s);
-                if (matcher.find())
-                {
-                    String voiceID = matcher.group(0);
-                    if (uniqueGenerics.contains(voiceID))
-                    {
-                        uniqueGenericIDs.add(i);
-                    }
-                }
-            }
-        }
+				customBlock.text=block;
+				customBlock.chapter = currentChapter;
 
-        for (Integer id: uniqueGenericIDs
-                )
-        {
-            String s = blocks.get(id);
-            s = s.replaceAll(" \\(Generic\\)", "");
-            blocks.set(id, s);
-        }
+				//Determine if voiced
+				Pattern patternVoice = Pattern.compile("\\[Voice: [0-9]*.at3.*\\]\\n");
+				Matcher matcherVoice = patternVoice.matcher(block);
+				if (matcherVoice.find())
+				{
 
-        toBeDeleted = new ArrayList<>();
+					customBlock.isVoiced=true;
+					String s = matcherVoice.group();
+
+
+					//If voiced, determine voice ID
+					Pattern patternID = Pattern.compile("[0-9]+");
+					Matcher matcherID = patternID.matcher(s);
+					if (matcherID.find())
+					{
+
+						customBlock.voiceFile = matcherID.group(0);
+					}
+					else
+					{
+						throw new InputMismatchException("Can't determine voice file for \n" + customBlock.text);
+					}
+
+
+					//If voiced, determine if generic voice
+					Pattern patternGeneric = Pattern.compile("\\[Voice: [0-9]*.at3 \\(Generic\\)\\]\\n");
+					Matcher matcherGeneric = patternGeneric.matcher(s);
+					if (matcherGeneric.find())
+					{
+						customBlock.isGeneric=true;
+					}
+					else
+					{
+						customBlock.isGeneric=false;
+					}
+				}
+				else
+				{
+					customBlock.isVoiced=false;
+					customBlock.isGeneric=false;
+				}
+				blocks.add(customBlock);
+			}
+		}
+
+		//Remove Generic tag from unique generics
+		if (cleanGenerics)
+		{
+			Set<String> genericVoiceovers = new HashSet<>();
+			Set<String> genericDuplicates = new HashSet<>();
+			for (Block block : blocks)
+			{
+				if (!genericVoiceovers.add(block.voiceFile))
+				{
+					genericDuplicates.add(block.voiceFile);
+				}
+			}
+
+			List uniqueGenerics = new ArrayList(genericVoiceovers);
+			uniqueGenerics.removeAll(genericDuplicates);
+
+
+			List<Integer> uniqueGenericIDs = new ArrayList<>();
+
+			for (int i = 0; i < blocks.size(); i++)
+			{
+				if (uniqueGenerics.contains(blocks.get(i).voiceFile))
+				{
+					uniqueGenericIDs.add(i);
+				}
+			}
+
+			for (Integer id : uniqueGenericIDs)
+			{
+				String s = blocks.get(id).text;
+				s = s.replaceAll(" \\(Generic\\)", "");
+				blocks.get(id).text = s;
+			}
+
+		}
+
+        List<Block>toBeDeleted = new ArrayList<>();
         boolean isSequentialLine=false;
         List<String> sequentialBlocks = new ArrayList<>();
-        for (String block: blocks
+        for (Block block: blocks
                 )
         {
             if (isCharacterBlock(block, character))

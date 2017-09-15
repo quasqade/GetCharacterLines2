@@ -68,20 +68,11 @@ public class Chapters {
         buffer.add(Chapter.EPILOGUE);
         map.put(Chapter.MAIN_SCRIPT, buffer);
 
-        //FTE
-        buffer = new ArrayList<>();
-        buffer.add(Chapter.FTE1);
-        buffer.add(Chapter.FTE2);
-        buffer.add(Chapter.FTE3);
-        buffer.add(Chapter.FTE4);
-        buffer.add(Chapter.FTE5);
-        buffer.add(Chapter.FTE6);
-        map.put(Chapter.FTE, buffer);
-
         //All
         buffer = new ArrayList<>();
         buffer.add(Chapter.MAIN_SCRIPT);
         buffer.add(Chapter.FTE);
+        buffer.add(Chapter.UNKNOWN);
         map.put(Chapter.ALL, buffer);
     }
 

@@ -1,3 +1,4 @@
+import logic.Chapters;
 import logic.Characters;
 import logic.InternalCharName;
 
@@ -11,6 +12,8 @@ public class Main
 public static void main (String[] args)
 {
 	Characters characters = new Characters();
+	Chapters chapters = new Chapters();
+
 	File characterFile = new File("character.txt");
 	String character = "";
 	try
