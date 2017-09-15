@@ -1,5 +1,7 @@
 package logic;
 
+import common.Chapter;
+
 import java.util.*;
 
 /**

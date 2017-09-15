@@ -1,4 +1,4 @@
-package logic;
+package common;
 
 public enum Character
 {

@@ -1,5 +1,8 @@
 package logic;
 
+import common.Chapter;
+import common.Character;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -8,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DumpProcessor {
-    public static String processDump(File inputFile, Character character, Chapter chapter, boolean cleanGenerics, boolean ignoreGenerics, int contextBefore, int contextAfter, File outputFile, boolean fixOffset)
+    public static String processDump(File inputFile, Character character, Chapter chapter, boolean cleanGenerics, boolean ignoreGenerics, int contextBefore, int contextAfter, File outputFile, boolean fixOffset, boolean onlyVoiced, int maximumSpacing)
     {
         StringBuilder sb = new StringBuilder("");
         List<String> textBlocks = new ArrayList();
@@ -123,6 +126,9 @@ public class DumpProcessor {
 			}
 		}
 
+		textBlocks=null; //just to help GC
+		System.gc();
+
 		//Remove Generic tag from unique generics
 		if (cleanGenerics)
 		{
@@ -160,6 +166,99 @@ public class DumpProcessor {
 
 		}
 		blocks.size();
+
+		//Filter output
+		List<Integer> linesToDump = new ArrayList<>();
+		for (Block block: blocks
+			 )
+		{
+			if (!block.character.equals(character) && !character.equals(Character.EVERYBODY))
+			{
+				continue;
+			}
+			if (!block.chapter.equals(chapter)) //TODO handle multiple chapters
+			{
+				continue;
+			}
+			if (onlyVoiced && !block.isVoiced)
+			{
+				continue;
+			}
+			if (ignoreGenerics && block.isGeneric)
+			{
+				continue;
+			}
+
+			linesToDump.add(blocks.indexOf(block));
+		}
+
+
+		sb = new StringBuilder("");
+
+		//Form output
+		if (character.equals(Character.EVERYBODY))
+		{
+			for (int id: linesToDump
+				 )
+			{
+				sb.append(blocks.get(id));
+			}
+			return sb.toString();
+		}
+
+		for(int i = 0; i<blocks.size(); i++)
+		{
+			//"Smart"  block grouping for context
+			if (linesToDump.contains(i))
+			{
+				sb.append("===================\n");
+				int currentBlockPos = i;
+				int noSelectedCharInARow = 0;//how many blocks have we passed without encountering a block from selected character?
+
+				List<Integer> blockGroupIDs = new ArrayList<>();
+				blockGroupIDs.add(currentBlockPos);
+				//Start going backwards
+				while (noSelectedCharInARow<maximumSpacing+1)
+				{
+					currentBlockPos--;
+					noSelectedCharInARow++;
+					//if (blocks.get(currentBlockPos).character.equals(character))
+					if (linesToDump.contains(currentBlockPos))
+					{
+						noSelectedCharInARow = 0;
+					}
+
+					blockGroupIDs.add(currentBlockPos);
+				}
+				blockGroupIDs.remove(new Integer(currentBlockPos));
+				currentBlockPos=i;
+				noSelectedCharInARow=0;
+				//Same but forwards
+				while (noSelectedCharInARow<maximumSpacing)
+				{
+					currentBlockPos++;
+					noSelectedCharInARow++;
+					//if (blocks.get(currentBlockPos).character.equals(character))
+					if (linesToDump.contains(currentBlockPos))
+					{
+						noSelectedCharInARow = 0;
+					}
+
+					blockGroupIDs.add(currentBlockPos);
+				}
+
+				Collections.sort(blockGroupIDs);
+				for (int id: blockGroupIDs
+					 )
+				{
+					sb.append(blocks.get(id).text);
+				}
+
+				i=currentBlockPos;
+			}
+		}
+
+		sb.toString();
        /* List<Block>toBeDeleted = new ArrayList<>();
         boolean isSequentialLine=false;
         List<String> sequentialBlocks = new ArrayList<>();

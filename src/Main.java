@@ -1,7 +1,7 @@
-import logic.Chapter;
+import common.Chapter;
 import logic.Chapters;
 import logic.Characters;
-import logic.Character;
+import common.Character;
 
 import java.io.*;
 
@@ -15,45 +15,10 @@ public static void main (String[] args)
 	Characters characters = new Characters();
 	Chapters chapters = new Chapters();
 
-	File characterFile = new File("character.txt");
-	String character = "";
-	try
-	{
-		BufferedReader br1 = new BufferedReader(new FileReader(characterFile));
-		String line;
-		while ((line = br1.readLine()) != null)
-		{
-			character = line;
-		}
-	} catch (Exception e)
-	{
-		e.printStackTrace();
-	}
-	if (character.equals(""))
-		return;
-
 	File file = new File("ru_dump.txt");
-	String str = logic.DumpProcessor.processDump(file, Character.NAEGI, Chapter.CHAPTER1, true, false, 1, 1, file, true);
+	String str = logic.DumpProcessor.processDump(file, Character.NAEGI, Chapter.CHAPTER1_TRIAL, true, true, 1, 1, file, true, true, 1);
 
-	File theDir = new File("./output");
-
-// if the directory does not exist, create it
-	if (!theDir.exists()) {
-		System.out.println("creating directory: " + theDir.getName());
-		boolean result = false;
-
-		try{
-			theDir.mkdir();
-			result = true;
-		}
-		catch(SecurityException se){
-			//handle it
-		}
-		if(result) {
-			System.out.println("DIR created");
-		}
-	}
-	File outFile = new File("./output/"+character+".txt");
+	File outFile = new File("output.txt");
 
 	System.out.println(outFile.getAbsolutePath());
 	try {

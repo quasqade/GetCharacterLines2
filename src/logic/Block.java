@@ -1,6 +1,9 @@
 package logic;
 
 
+import common.Chapter;
+import common.Character;
+
 /**
  * Created by user on 15-Sep-17.
  */

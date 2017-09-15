@@ -1,4 +1,6 @@
 package logic;
+import common.Character;
+
 import java.util.HashMap;
 import java.util.Map;
 
