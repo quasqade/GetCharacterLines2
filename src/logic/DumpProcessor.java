@@ -14,11 +14,11 @@ public class DumpProcessor {
     public static String processDump(File inputFile, Character character, Chapter chapter, boolean cleanGenerics, boolean ignoreGenerics, int contextBefore, int contextAfter, boolean fixOffset, boolean onlyVoiced, int maximumSpacing)
     {
         StringBuilder sb = new StringBuilder("");
-        List<String> textBlocks = new ArrayList();
+        List<String> textBlocks = new ArrayList<>();
 
         ChapterMap chapterMap = new ChapterMap();
         Characters characters = new Characters();
-
+		Chapters chapters = new Chapters();
 
         try
         {
@@ -181,7 +181,7 @@ public class DumpProcessor {
 			{
 				continue;
 			}
-			if (!block.chapter.equals(chapter)) //TODO handle multiple chapters
+			if (!chapters.isContained(block.chapter, chapter))
 			{
 				continue;
 			}

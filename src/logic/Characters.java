@@ -1,7 +1,9 @@
 package logic;
 import common.Character;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Characters {
@@ -46,5 +48,16 @@ public class Characters {
 	public boolean contains (String externalName)
 	{
 		return charList.containsValue(externalName);
+	}
+
+	public List<String> getCharacters()
+	{
+		List<String> list = new ArrayList<>();
+		for (Character key: charList.keySet()
+			 )
+		{
+			list.add(charList.get(key));
+		}
+		return list;
 	}
 }

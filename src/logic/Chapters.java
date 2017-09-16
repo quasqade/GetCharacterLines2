@@ -89,4 +89,32 @@ public class Chapters {
     {
         return map.containsKey(chapter);
     }
+
+    public boolean isContained(Chapter testedChapter, Chapter conditionChapter)
+    {
+        if (testedChapter.equals(conditionChapter))
+        {
+            return true;
+        }
+        else
+        {
+            if (!map.containsKey(conditionChapter))
+            {
+                return false;
+            }
+            else
+            {
+                List<Chapter> subchapters = map.get(conditionChapter);
+                for (Chapter subchapter: subchapters
+                     )
+                {
+                    if (isContained(testedChapter, subchapter))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+    }
 }
