@@ -2,23 +2,147 @@ package logic;
 
 import common.Chapter;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.util.*;
 
 /**
  * Shamelessly taken from SDSE by BlackDragonHunt
  */
-public class ChapterMap
+public class ChapterTree
 {
-	private Map<Chapter, List<String>> map;
+	private Map<Chapter, List<String>> fileMap;
+	private Map<Chapter, List<Chapter>> chapterMap;
+	private DefaultTreeModel treeModel;
 
-	public ChapterMap()
+
+	public ChapterTree()
 	{
-		map = new HashMap<>();
+		//Chapter map
+		chapterMap = new HashMap<>();
+		initializeChapterMap();
 
-		List<String> buffer;
+		//File map
+		fileMap = new HashMap<>();
+		initializeFileMap();
 
+		//Build tree
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode(Chapter.ALL);
+		treeModel = new DefaultTreeModel(root);
+		generateTree();
+
+	}
+
+	private void generateTree()
+	{
+			DefaultMutableTreeNode root = (DefaultMutableTreeNode)treeModel.getRoot();
+			List<Chapter> chapters = chapterMap.get(Chapter.ALL);
+			for (Chapter primaryChapter: chapters
+				 ) {
+				buildNode(root, primaryChapter);
+			}
+			treeModel.reload();
+	}
+
+	private void buildNode(DefaultMutableTreeNode parentNode, Chapter chapter)
+	{
+		if (chapterMap.containsKey(chapter))
+		{
+			//if contains subchapters
+			List<Chapter> chapters = chapterMap.get(chapter);
+			for (Chapter subchapter: chapters
+				 ) {
+				DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(subchapter);
+				parentNode.add(childNode);
+				buildNode(childNode, subchapter);
+			}
+		}
+		else
+		{
+			//if final chapter node
+			if (fileMap.containsKey(chapter)) {
+				List<String> files = fileMap.get(chapter);
+
+
+				for (String file : files
+						) {
+					DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(file);
+					parentNode.add(childNode);
+				}
+			}
+		}
+	}
+
+	private void initializeChapterMap()
+	{
+		List<Chapter> buffer;
+
+		//Chapter 1
+		buffer = new ArrayList<>();
+		buffer.add(Chapter.CHAPTER1_EL);
+		buffer.add(Chapter.CHAPTER1_NL);
+		buffer.add(Chapter.CHAPTER1_TRIAL);
+		chapterMap.put(Chapter.CHAPTER1, buffer);
+
+		//Chapter 2
+		buffer = new ArrayList<>();
+		buffer.add(Chapter.CHAPTER2_EL);
+		buffer.add(Chapter.CHAPTER2_NL);
+		buffer.add(Chapter.CHAPTER2_TRIAL);
+		chapterMap.put(Chapter.CHAPTER2, buffer);
+
+		//Chapter 3
+		buffer = new ArrayList<>();
+		buffer.add(Chapter.CHAPTER3_EL);
+		buffer.add(Chapter.CHAPTER3_NL);
+		buffer.add(Chapter.CHAPTER3_TRIAL);
+		chapterMap.put(Chapter.CHAPTER3, buffer);
+
+		//Chapter 4
+		buffer = new ArrayList<>();
+		buffer.add(Chapter.CHAPTER4_EL);
+		buffer.add(Chapter.CHAPTER4_NL);
+		buffer.add(Chapter.CHAPTER4_TRIAL);
+		chapterMap.put(Chapter.CHAPTER4, buffer);
+
+		//Chapter 5
+		buffer = new ArrayList<>();
+		buffer.add(Chapter.CHAPTER5_EL);
+		buffer.add(Chapter.CHAPTER5_NL);
+		buffer.add(Chapter.CHAPTER5_TRIAL);
+		chapterMap.put(Chapter.CHAPTER5, buffer);
+
+		//Chapter 6
+		buffer = new ArrayList<>();
+		buffer.add(Chapter.CHAPTER6_EL);
+		buffer.add(Chapter.CHAPTER6_NL);
+		buffer.add(Chapter.CHAPTER6_TRIAL);
+		chapterMap.put(Chapter.CHAPTER6, buffer);
+
+		//Main Script
+		buffer = new ArrayList<>();
+		buffer.add(Chapter.PROLOGUE);
+		buffer.add(Chapter.CHAPTER1);
+		buffer.add(Chapter.CHAPTER2);
+		buffer.add(Chapter.CHAPTER3);
+		buffer.add(Chapter.CHAPTER4);
+		buffer.add(Chapter.CHAPTER5);
+		buffer.add(Chapter.CHAPTER6);
+		buffer.add(Chapter.EPILOGUE);
+		chapterMap.put(Chapter.MAIN_SCRIPT, buffer);
+
+		//All
+		buffer = new ArrayList<>();
+		buffer.add(Chapter.MAIN_SCRIPT);
+		buffer.add(Chapter.FTE);
+		buffer.add(Chapter.UNKNOWN);
+		chapterMap.put(Chapter.ALL, buffer);
+	}
+
+	private void initializeFileMap()
+	{
 		//Prologue
-		map.put(Chapter.PROLOGUE, Arrays.asList("e00_001_000.lin",
+		fileMap.put(Chapter.PROLOGUE, Arrays.asList("e00_001_000.lin",
 				"e00_002_000.lin",
 				"e00_003_001.lin",
 				"e00_004_003.lin",
@@ -28,7 +152,7 @@ public class ChapterMap
 				"script_pak_e00_0000.lin"));
 
 		//Chapter 1
-		map.put(Chapter.CHAPTER1_EL, Arrays.asList("e01_001_007.lin",
+		fileMap.put(Chapter.CHAPTER1_EL, Arrays.asList("e01_001_007.lin",
 				"e01_001_103.lin",
 				"e01_002_101.lin",
 				"e01_002_146.lin",
@@ -107,8 +231,8 @@ public class ChapterMap
 				"e01_000_146.lin",
 				"script_pak_e01_0000.lin",
 				"script_pak_e01_0023.lin"
-				));
-		map.put(Chapter.CHAPTER1_NL, Arrays.asList("e01_023_006.lin",
+		));
+		fileMap.put(Chapter.CHAPTER1_NL, Arrays.asList("e01_023_006.lin",
 				"e01_022_006.lin",
 				"e01_024_006.lin",
 				"e01_025_104.lin",
@@ -140,8 +264,8 @@ public class ChapterMap
 				"e01_040_001.lin",
 				"e01_040_201.lin",
 				"e01_040_203.lin"
-				));
-		map.put(Chapter.CHAPTER1_TRIAL, Arrays.asList("e01_101_000.lin",
+		));
+		fileMap.put(Chapter.CHAPTER1_TRIAL, Arrays.asList("e01_101_000.lin",
 				"e01_150_000.lin",
 				"nonstop_01_001.dat",
 				"e01_102_000.lin",
@@ -189,7 +313,7 @@ public class ChapterMap
 				"e01_197_000.lin"));
 
 		//Chapter 2
-		map.put(Chapter.CHAPTER2_EL, Arrays.asList("e02_001_103.lin",
+		fileMap.put(Chapter.CHAPTER2_EL, Arrays.asList("e02_001_103.lin",
 				"e02_001_105.lin",
 				"e02_002_135.lin",
 				"e02_003_006.lin",
@@ -304,8 +428,8 @@ public class ChapterMap
 				"script_pak_e02_0029.lin",
 				"script_pak_e02_0030.lin",
 				"script_pak_e02_0031.lin"
-				));
-		map.put(Chapter.CHAPTER2_NL, Arrays.asList("e02_027_029.lin",
+		));
+		fileMap.put(Chapter.CHAPTER2_NL, Arrays.asList("e02_027_029.lin",
 				"e02_028_026.lin",
 				"e02_028_003.lin",
 				"e02_029_101.lin",
@@ -345,7 +469,7 @@ public class ChapterMap
 				"e02_033_001.lin",
 				"e02_033_201.lin",
 				"e02_033_204.lin"));
-		map.put(Chapter.CHAPTER2_TRIAL, Arrays.asList("e02_101_000.lin",
+		fileMap.put(Chapter.CHAPTER2_TRIAL, Arrays.asList("e02_101_000.lin",
 				"nonstop_02_001.dat",
 				"e02_102_000.lin",
 				"e02_103_000.lin",
@@ -392,7 +516,7 @@ public class ChapterMap
 				"e02_196_000.lin",
 				"e02_197_000.lin"));
 
-		map.put(Chapter.CHAPTER3_EL, Arrays.asList("e03_001_123.lin",
+		fileMap.put(Chapter.CHAPTER3_EL, Arrays.asList("e03_001_123.lin",
 				"e03_002_135.lin",
 				"e03_003_021.lin",
 				"e03_003_027.lin",
@@ -563,7 +687,7 @@ public class ChapterMap
 				"script_pak_e03_0043.lin",
 				"script_pak_e03_0044.lin",
 				"script_pak_e03_0045.lin"));
-		map.put(Chapter.CHAPTER3_NL, Arrays.asList("e03_037_048.lin",
+		fileMap.put(Chapter.CHAPTER3_NL, Arrays.asList("e03_037_048.lin",
 				"e03_037_041.lin",
 				"e03_037_011.lin",
 				"e03_034_048.lin",
@@ -625,7 +749,7 @@ public class ChapterMap
 				"e03_046_001.lin",
 				"e03_046_201.lin",
 				"e03_046_205.lin"));
-		map.put(Chapter.CHAPTER3_TRIAL, Arrays.asList("e03_101_000.lin",
+		fileMap.put(Chapter.CHAPTER3_TRIAL, Arrays.asList("e03_101_000.lin",
 				"nonstop_03_001.dat",
 				"e03_102_000.lin",
 				"e03_103_000.lin",
@@ -685,7 +809,7 @@ public class ChapterMap
 				"e03_203_004.lin",
 				"e03_203_006.lin"));
 
-		map.put(Chapter.CHAPTER4_EL, Arrays.asList("e04_001_135.lin",
+		fileMap.put(Chapter.CHAPTER4_EL, Arrays.asList("e04_001_135.lin",
 				"e04_002_135.lin",
 				"e04_003_101.lin",
 				"e04_003_061.lin",
@@ -860,7 +984,7 @@ public class ChapterMap
 				"script_pak_e04_0050.lin",
 				"script_pak_e04_0051.lin",
 				"script_pak_e04_0052.lin"));
-		map.put(Chapter.CHAPTER4_NL, Arrays.asList("e04_016_043.lin",
+		fileMap.put(Chapter.CHAPTER4_NL, Arrays.asList("e04_016_043.lin",
 				"e04_017_043.lin",
 				"e04_255_100.lin",
 				"e04_255_101.lin",
@@ -881,7 +1005,7 @@ public class ChapterMap
 				"e04_255_150.lin",
 				"e04_019_201.lin",
 				"e04_019_220.lin"));
-		map.put(Chapter.CHAPTER4_TRIAL, Arrays.asList("e04_101_000.lin",
+		fileMap.put(Chapter.CHAPTER4_TRIAL, Arrays.asList("e04_101_000.lin",
 				"nonstop_04_001.dat",
 				"e04_102_000.lin",
 				"e04_103_000.lin",
@@ -934,7 +1058,7 @@ public class ChapterMap
 				"e04_201_061.lin",
 				"e04_201_101.lin"));
 
-		map.put(Chapter.CHAPTER5_EL, Arrays.asList("e05_002_135.lin",
+		fileMap.put(Chapter.CHAPTER5_EL, Arrays.asList("e05_002_135.lin",
 				"e05_003_101.lin",
 				"e05_003_001.lin",
 				"e05_003_021.lin",
@@ -1088,7 +1212,7 @@ public class ChapterMap
 				"script_pak_e05_0058.lin",
 				"script_pak_e05_0059.lin",
 				"script_pak_e05_0060.lin"));
-		map.put(Chapter.CHAPTER5_NL, Arrays.asList("e05_020_083.lin",
+		fileMap.put(Chapter.CHAPTER5_NL, Arrays.asList("e05_020_083.lin",
 				"e05_020_084.lin",
 				"e05_022_081.lin",
 				"e05_022_041.lin",
@@ -1132,7 +1256,7 @@ public class ChapterMap
 				"e05_030_001.lin",
 				"e05_030_201.lin",
 				"e05_030_207.lin"));
-		map.put(Chapter.CHAPTER5_TRIAL, Arrays.asList("e05_101_000.lin",
+		fileMap.put(Chapter.CHAPTER5_TRIAL, Arrays.asList("e05_101_000.lin",
 				"nonstop_05_001.dat",
 				"e05_102_000.lin",
 				"e05_103_000.lin",
@@ -1182,7 +1306,7 @@ public class ChapterMap
 				//Post trial
 				"e05_201_216.lin"));
 
-		map.put(Chapter.CHAPTER6_EL, Arrays.asList(
+		fileMap.put(Chapter.CHAPTER6_EL, Arrays.asList(
 				//Generic text
 				"e06_000_001.lin",
 				"e06_000_003.lin",
@@ -1304,7 +1428,7 @@ public class ChapterMap
 				"script_pak_e06_0062.lin",
 				"script_pak_e06_0063.lin"
 		));
-		map.put(Chapter.CHAPTER6_NL, Arrays.asList("e06_001_216.lin",
+		fileMap.put(Chapter.CHAPTER6_NL, Arrays.asList("e06_001_216.lin",
 				"e06_003_137.lin",
 				"e06_003_101.lin",
 				"e06_003_001.lin",
@@ -1345,7 +1469,7 @@ public class ChapterMap
 				"e06_021_001.lin",
 				"e06_021_201.lin",
 				"e06_021_208.lin"));
-		map.put(Chapter.CHAPTER6_TRIAL, Arrays.asList("e06_101_000.lin",
+		fileMap.put(Chapter.CHAPTER6_TRIAL, Arrays.asList("e06_101_000.lin",
 				"nonstop_06_001.dat",
 				"e06_102_000.lin",
 				"e06_103_000.lin",
@@ -1413,10 +1537,10 @@ public class ChapterMap
 				"e06_197_000.lin"
 		));
 
-		map.put(Chapter.EPILOGUE, Arrays.asList("e07_001_003.lin",
+		fileMap.put(Chapter.EPILOGUE, Arrays.asList("e07_001_003.lin",
 				"script_pak_e07_0000.lin"));
 
-		map.put(Chapter.FTE, Arrays.asList(
+		fileMap.put(Chapter.FTE, Arrays.asList(
 				//Ishimaru
 				"e08_001_001.lin",
 				"e08_001_002.lin",
@@ -1645,17 +1769,17 @@ public class ChapterMap
 				"e08_014_021.lin",
 				"e08_014_022.lin",
 				"e08_014_023.lin"
-				));
+		));
 	}
 
 	public Chapter get(String filename)
 	{
-		for (List<String> list: map.values()
+		for (List<String> list: fileMap.values()
 			 )
 		{
 			if (list.contains(filename))
 			{
-				return getKeyByValue(map, list);
+				return getKeyByValue(fileMap, list);
 			}
 		}
 		return Chapter.UNKNOWN;
@@ -1669,4 +1793,45 @@ public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
 	}
 	return null;
 }
+
+	public List<Chapter> get(Chapter chapter)
+	{
+		if (chapterMap.containsKey(chapter))
+			return chapterMap.get(chapter);
+		return null;
+	}
+
+	public boolean isContained(Chapter testedChapter, Chapter conditionChapter)
+	{
+		if (testedChapter.equals(conditionChapter))
+		{
+			return true;
+		}
+		else
+		{
+			if (!chapterMap.containsKey(conditionChapter))
+			{
+				return false;
+			}
+			else
+			{
+				List<Chapter> subchapters = chapterMap.get(conditionChapter);
+				for (Chapter subchapter: subchapters
+						)
+				{
+					if (isContained(testedChapter, subchapter))
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+		}
+	}
+
+	public DefaultTreeModel getTreeModel() {
+		return treeModel;
+	}
+
+
 }

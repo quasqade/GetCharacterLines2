@@ -11,14 +11,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DumpProcessor {
-    public static String processDump(File inputFile, Character character, Chapter chapter, boolean cleanGenerics, boolean ignoreGenerics, int contextBefore, int contextAfter, boolean fixOffset, boolean onlyVoiced, int maximumSpacing)
+    public static String processDump(File inputFile, Character character, List<String> linFiles, boolean cleanGenerics, boolean ignoreGenerics, int contextBefore, int contextAfter, boolean fixOffset, boolean onlyVoiced, int maximumSpacing)
     {
         StringBuilder sb = new StringBuilder("");
         List<String> textBlocks = new ArrayList<>();
 
-        ChapterMap chapterMap = new ChapterMap();
+        ChapterTree chapterTree = new ChapterTree();
         Characters characters = new Characters();
-		Chapters chapters = new Chapters();
 
         try
         {
@@ -48,7 +47,7 @@ public class DumpProcessor {
 		List<Block> blocks = new ArrayList<>();
 
 
-		Chapter currentChapter = Chapter.UNKNOWN;
+		String currentFile = "UNKNOWN.dat";
 
 		//Gather info about blocks and write it into a new list of Block objects
 		for (String block: textBlocks)
@@ -59,8 +58,7 @@ public class DumpProcessor {
 				Matcher matcherLin = patternLin.matcher(block);
 				if (matcherLin.find())
 				{
-					String lin = matcherLin.group();
-					currentChapter = chapterMap.get(lin);
+					currentFile = matcherLin.group();
 				}
 			}
 			else
@@ -68,7 +66,7 @@ public class DumpProcessor {
 				Block customBlock = new Block();
 
 				customBlock.text=block;
-				customBlock.chapter = currentChapter;
+				customBlock.linFile = currentFile;
 
 				//Determine character
 				Pattern patternChar = Pattern.compile("\\[.*\\]\\n");
@@ -181,7 +179,13 @@ public class DumpProcessor {
 			{
 				continue;
 			}
-			if (!chapters.isContained(block.chapter, chapter))
+			boolean stop = false;
+			for (String file:linFiles
+				 ) {
+				if (block.linFile.equals(file))
+				stop=true;
+			}
+			if (!stop)
 			{
 				continue;
 			}

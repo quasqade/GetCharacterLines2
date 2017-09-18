@@ -16,9 +16,10 @@ public class MainFrame extends JFrame
 
 		add(mainPanel, BorderLayout.CENTER);
 
-		setMinimumSize(new Dimension(500, 600));
-		setSize(new Dimension(500, 600));
+		setMinimumSize(new Dimension(450, 700));
+		setSize(new Dimension(500, 700));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		pack();
 		setVisible(true);
 	}
 }

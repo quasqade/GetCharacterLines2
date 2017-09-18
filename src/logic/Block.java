@@ -14,5 +14,5 @@ public class Block
 	public boolean isVoiced;
 	public String voiceFile="";
 	public boolean isGeneric;
-	public Chapter chapter;
+	public String linFile;
 }

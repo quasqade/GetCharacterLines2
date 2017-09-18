@@ -12,6 +12,7 @@ public class Characters {
     public Characters()
     {
         charList=new HashMap();
+        charList.put(Character.EVERYBODY, "EVERYONE");
         charList.put(Character.NAEGI, "Makoto Naegi");
         charList.put(Character.ISHIMARU, "Kiyotaka Ishimaru");
         charList.put(Character.TOGAMI, "Byakuya Togami");
