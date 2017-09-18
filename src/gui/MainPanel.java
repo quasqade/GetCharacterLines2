@@ -3,8 +3,10 @@ package gui;
 import common.Character;
 import logic.ChapterTree;
 import logic.Characters;
+import logic.DumpProcessor;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -19,6 +21,7 @@ public class MainPanel extends JPanel
 {
 	//Logic stuff
 	private ChapterTree chapterTree;
+	private ActionListener workListener;
 
 	//File input
 	private JButton inputFileButton;
@@ -55,6 +58,9 @@ public class MainPanel extends JPanel
 
 	//parameters
 	private File inputFile;
+	private Character selectedCharacter;
+	private java.util.List<String> selectedChapters;
+	private File outputFile;
 
 
 	public MainPanel()
@@ -76,7 +82,7 @@ public class MainPanel extends JPanel
 		inputFileButton.setMinimumSize(new Dimension(50, 20));
 		inputFileStep = new JPanel();
 		//inputFileStep.setBorder(BorderFactory.createEtchedBorder());
-		inputFileStep.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Dump"));
+		inputFileStep.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Дамп из SDSE"));
 
 		inputFileLayout();
 
@@ -87,7 +93,7 @@ public class MainPanel extends JPanel
 		characterConfirmButton = new JButton("Select");
 		characterPanel = new JPanel();
 		//characterPanel.setBorder(BorderFactory.createEtchedBorder());
-		characterPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Character"));
+		characterPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Персонаж"));
 
 		characterSelectionLayout();
 
@@ -105,18 +111,18 @@ public class MainPanel extends JPanel
 			@Override
 			public void checkStateChanged(JCheckBoxTree.CheckChangeEvent event)
 			{
-				TreePath[] paths = chapterJTree.getCheckedPaths();
+/*				TreePath[] paths = chapterJTree.getCheckedPaths();
 				for (TreePath tp : paths) {
 					DefaultMutableTreeNode node = (DefaultMutableTreeNode)tp.getLastPathComponent();
-					if (node.getUserObject().getClass().equals(String.class))
+					if (node.getUserObject() instanceof String)
 					System.out.println(tp.getLastPathComponent());
-				}
+				}*/
 			}
 		});
 		chapterConfirmButton = new JButton("Select");
 		chapterPanel = new JPanel();
 		chapterPanel.setPreferredSize(new Dimension(400, 800));
-		chapterPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Chapters"));
+		chapterPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Главы"));
 
 		chapterSelectionLayout();
 
@@ -124,7 +130,7 @@ public class MainPanel extends JPanel
 		SpinnerNumberModel offsetSpinnerModel = new SpinnerNumberModel(-15, -100, 100, 1);
 		offsetSpinner = new JSpinner(offsetSpinnerModel);
 		miscPanel = new JPanel();
-		miscPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Additional options"));
+		miscPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Параметры"));
 		cleanGenericsCB = new JCheckBox("Clean Generics");
 		cleanGenericsCB.setSelected(true);
 		outputGenericsCB = new JCheckBox("Output Generics");
@@ -140,13 +146,41 @@ public class MainPanel extends JPanel
 		//File output
 		outFileBtn = new JButton("Output file...");
 		outFilePanel = new JPanel();
-		outFilePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "File output"));
+		outFilePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Вывод в файл"));
 
 		outFileLayout();
 
 		layoutComponents();
 
+		//Disable future steps
+		switchContainerElements(characterPanel, false);
+		switchContainerElements(chapterPanel, false);
+		switchContainerElements(miscPanel, false);
+		switchContainerElements(outFilePanel, false);
+
+
 		functionality();
+	}
+
+	private boolean switchContainerElements(Container container, boolean state)
+	{
+		try
+		{
+			for (Component component: container.getComponents()
+				 )
+			{
+				component.setEnabled(state);
+				if (component instanceof Container)
+					switchContainerElements((Container)component, state);
+			}
+			container.setEnabled(state);
+			return true;
+		}
+		catch (Exception e)
+		{
+			System.err.println(e.getMessage());
+			return false;
+		}
 	}
 
 	private void functionality()
@@ -155,8 +189,87 @@ public class MainPanel extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser inputFileChooser = new JFileChooser();
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("SDSE Scipt Dumps", "txt");
+				inputFileChooser.setFileFilter(filter);
+				inputFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+				int returnVal = inputFileChooser.showOpenDialog(getParent());
+				if (returnVal == JFileChooser.APPROVE_OPTION)
+				{
+					inputFile = inputFileChooser.getSelectedFile();
+					inputFileTextField.setText(inputFile.getName());
+					switchContainerElements(characterPanel, true);
+				}
+				repaint();
 			}
 		});
+
+		characterConfirmButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				selectedCharacter = Character.values()[characterCombobox.getSelectedIndex()];
+				switchContainerElements(chapterPanel, true);
+			}
+		});
+
+		chapterConfirmButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				selectedChapters=new java.util.ArrayList<String>();
+				TreePath[] paths = chapterJTree.getCheckedPaths();
+				for (TreePath tp : paths) {
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode)tp.getLastPathComponent();
+					if (node.getUserObject() instanceof String)
+						selectedChapters.add((String) node.getUserObject());
+				}
+				switchContainerElements(miscPanel, true);
+			}
+		});
+
+		miscBtn.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				//TODO functionality
+				switchContainerElements(outFilePanel, true);
+			}
+		});
+
+		outFileBtn.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				JFileChooser outFileChooser = new JFileChooser();
+				outFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+				outFileChooser.setSelectedFile(new File(new Characters().get(selectedCharacter) + ".txt"));
+				int val = outFileChooser.showSaveDialog(outFilePanel);
+				if (val == JFileChooser.APPROVE_OPTION)
+				{
+					outputFile = outFileChooser.getSelectedFile();
+					workListener = new ActionListener()
+					{
+						@Override
+						public void actionPerformed(ActionEvent e)
+						{
+							JOptionPane.showMessageDialog(getParent(), "Готово!");
+						}
+					};
+					processFile();
+				}
+			}
+		});
+
+	}
+
+	private void processFile()
+	{
+		DumpProcessor processorWorker = new DumpProcessor(workListener, outputFile, inputFile, selectedCharacter, selectedChapters, cleanGenericsCB.isSelected(), !outputGenericsCB.isSelected(), 1, 1, (Integer)offsetSpinner.getValue(), onlyVoicedCB.isSelected(), 1);
+		processorWorker.execute();
 	}
 
 	private void outFileLayout()
@@ -336,6 +449,7 @@ private void chapterSelectionLayout()
 	//Second column
 	gbc.gridx=0;
 	gbc.weightx = 200;
+	gbc.weighty=10000;
 	gbc.fill = GridBagConstraints.BOTH;
 	gbc.anchor = GridBagConstraints.LINE_START;
 	gbc.insets = new Insets(5,5,5,5);
@@ -347,6 +461,7 @@ private void chapterSelectionLayout()
 	gbc.gridx=0;
 	gbc.gridy++;
 	gbc.weightx = 100;
+	gbc.weighty=100;
 	gbc.fill = GridBagConstraints.NONE;
 	gbc.anchor = GridBagConstraints.LINE_END;
 	gbc.insets = new Insets(5,5,5,5);
@@ -383,16 +498,18 @@ private void chapterSelectionLayout()
 		//Next step
 		gbc.gridx=0;
 		gbc.gridy++;
-		gbc.weighty = 200;
-		gbc.fill = GridBagConstraints.RELATIVE;
+		gbc.weighty = 10000;
+		gbc.gridheight=5;
+		gbc.fill = GridBagConstraints.BOTH;
 		gbc.anchor = GridBagConstraints.LINE_START;
 		gbc.insets=new Insets(5, 5,5,5);
 		add(chapterPanel, gbc);
 
 		//Next step
 		gbc.gridx=0;
-		gbc.gridy++;
+		gbc.gridy+=5;
 		gbc.weighty=100;
+		gbc.gridheight=1;
 		gbc.fill=GridBagConstraints.NONE;
 		gbc.anchor = GridBagConstraints.LINE_START;
 		gbc.insets=new Insets(5, 5,5,5);

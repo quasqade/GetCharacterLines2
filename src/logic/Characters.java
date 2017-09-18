@@ -24,12 +24,29 @@ public class Characters {
 		charList.put(Character.KIRIGIRI,  "Kyouko Kirigiri");
 		charList.put(Character.ASAHINA,  "Aoi Asahina");
 		charList.put(Character.FUKAWA, "Touko Fukawa");
-        //TODO add others
+		charList.put(Character.OOGAMI, "Sakura Oogami");
+		charList.put(Character.CELES, "Celestia Ludenberg");
+		charList.put(Character.ENOSHIMA, "Junko Enoshima");
+		charList.put(Character.FUJISAKI, "Chihiro Fujisaki");
+		charList.put(Character.MONOKUMA, "Monokuma");
+		charList.put(Character.ENOSHIMA_REAL, "Junko Enoshima (黒幕)"); //means  mastermind
+		charList.put(Character.ALTER_EGO, "Alter Ego");
+		charList.put(Character.GENOCIDER, "Genocider Shou");
+		charList.put(Character.HEADMASTER, "The Headmaster");
+		charList.put(Character.NAEGI_MOTHER, "Naegi's Mother");
+		charList.put(Character.NAEGI_FATHER, "Naegi's Father");
+		charList.put(Character.NAEGI_SISTER, "Naegi's Little Sister");
+		charList.put(Character.ISHIMARU_OOWADA, "Ishimaru + Oowada");
+		charList.put(Character.DAIA_OOWADA, "Daia Oowada");
+		charList.put(Character.NO_NAME, "???");
+		charList.put(Character.NARRATION, "Narration");
     }
 
     public String get(Character character)
     {
-        return charList.get(character);
+    	if (charList.containsKey(character))
+    	return charList.get(character);
+    	return character.toString();
     }
 
     public Character get(String externalName)
@@ -54,10 +71,17 @@ public class Characters {
 	public List<String> getCharacters()
 	{
 		List<String> list = new ArrayList<>();
-		for (Character key: charList.keySet()
+		for (Character character: Character.values()
 			 )
 		{
-			list.add(charList.get(key));
+			if (charList.containsKey(character))
+			{
+				list.add(charList.get(character));
+			}
+			else
+			{
+				list.add(character.toString());
+			}
 		}
 		return list;
 	}

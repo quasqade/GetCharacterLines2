@@ -17,12 +17,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.event.EventListenerList;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeSelectionModel;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 
 public class JCheckBoxTree extends JTree {
 
@@ -172,6 +167,10 @@ public JCheckBoxTree() {
 	// Calling checking mechanism on mouse click
 	this.addMouseListener(new MouseListener() {
 		public void mouseClicked(MouseEvent arg0) {
+			if (!isEnabled())
+			{
+				return;
+			}
 			TreePath tp = selfPointer.getPathForLocation(arg0.getX(), arg0.getY());
 			if (tp == null) {
 				return;
