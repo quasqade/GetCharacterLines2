@@ -277,11 +277,12 @@ private String processDump()
 
 				blockGroupIDs.add(currentBlockPos);
 			}
+
 			blockGroupIDs.remove(new Integer(currentBlockPos));
 			currentBlockPos = i;
 			noSelectedCharInARow = 0;
 			//Same but forwards
-			while (noSelectedCharInARow < maximumSpacing)
+			while (noSelectedCharInARow < maximumSpacing + 1)
 			{
 				currentBlockPos++;
 				noSelectedCharInARow++;
@@ -293,11 +294,14 @@ private String processDump()
 
 				blockGroupIDs.add(currentBlockPos);
 			}
-
+			blockGroupIDs.remove(new Integer(currentBlockPos));
 			Collections.sort(blockGroupIDs);
 			for (int id : blockGroupIDs)
 			{
-				sb.append(blocks.get(id).text);
+				Block block = blocks.get(id);
+				if (block.character!=character)
+					block.text = stripVoice(block.text);
+				sb.append(block.text);
 			}
 
 			i = currentBlockPos;

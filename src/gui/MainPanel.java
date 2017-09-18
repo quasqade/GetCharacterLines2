@@ -257,6 +257,7 @@ public class MainPanel extends JPanel
 						public void actionPerformed(ActionEvent e)
 						{
 							JOptionPane.showMessageDialog(getParent(), "Готово!");
+							System.exit(0);
 						}
 					};
 					processFile();
