@@ -248,7 +248,7 @@ private String processDump()
 	{
 		for (int id : linesToDump)
 		{
-			sb.append(blocks.get(id));
+			sb.append(blocks.get(id).text);
 		}
 		return sb.toString();
 	}
