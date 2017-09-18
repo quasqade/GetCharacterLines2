@@ -127,7 +127,7 @@ public class MainPanel extends JPanel
 		chapterSelectionLayout();
 
 		//Additional Options
-		SpinnerNumberModel offsetSpinnerModel = new SpinnerNumberModel(-15, -100, 100, 1);
+		SpinnerNumberModel offsetSpinnerModel = new SpinnerNumberModel(-18, -100, 100, 1);
 		offsetSpinner = new JSpinner(offsetSpinnerModel);
 		miscPanel = new JPanel();
 		miscPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Параметры"));
