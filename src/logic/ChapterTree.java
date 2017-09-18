@@ -39,7 +39,9 @@ public class ChapterTree
 			List<Chapter> chapters = chapterMap.get(Chapter.ALL);
 			for (Chapter primaryChapter: chapters
 				 ) {
-				buildNode(root, primaryChapter);
+				DefaultMutableTreeNode chapterNode = new DefaultMutableTreeNode(primaryChapter);
+				root.add(chapterNode);
+				buildNode(chapterNode, primaryChapter);
 			}
 			treeModel.reload();
 	}
