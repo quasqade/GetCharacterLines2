@@ -79,6 +79,7 @@ public class MainPanel extends JPanel
 		inputFileTextField.setMinimumSize(new Dimension(200, 20));
 		inputFileTextField.setEnabled(false);
 		inputFileButton = new JButton("Open...");
+		inputFileButton.setToolTipText("Дамп MainScript без доп. опций");
 		inputFileButton.setMinimumSize(new Dimension(50, 20));
 		inputFileStep = new JPanel();
 		//inputFileStep.setBorder(BorderFactory.createEtchedBorder());
@@ -91,6 +92,7 @@ public class MainPanel extends JPanel
 
 		characterCombobox = new JComboBox(new Characters().getCharacters().toArray());
 		characterConfirmButton = new JButton("Select");
+		characterConfirmButton.setToolTipText("<html>EVERYONE позволяет очистить дамп не выбирая персонажа <br>Junko без иероглифов - Мукуро <br>Junko с иероглифами - мастермайнд</html>");
 		characterPanel = new JPanel();
 		//characterPanel.setBorder(BorderFactory.createEtchedBorder());
 		characterPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Персонаж"));
@@ -133,11 +135,15 @@ public class MainPanel extends JPanel
 		miscPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Параметры"));
 		cleanGenericsCB = new JCheckBox("Clean Generics");
 		cleanGenericsCB.setSelected(true);
+		cleanGenericsCB.setToolTipText("<html>Позволяет убрать Generic с озвученных фраз вне судов</html>");
 		outputGenericsCB = new JCheckBox("Output Generics");
+		outputGenericsCB.setToolTipText("<html>Выводить Generic озвучку <br>(всякие хмыкания и некоторая озвучка вне судов)</html>");
 		enableContext = new JCheckBox("Enable context");
 		enableContext.setSelected(true);
+		enableContext.setToolTipText("<html>Пока не работает</html>");
 		onlyVoicedCB = new JCheckBox("Only voiced lines");
 		onlyVoicedCB.setSelected(true);
+		onlyVoicedCB.setToolTipText("<html>Выводить только озвученные фразы</html>");
 		offsetLabel = new JLabel("Offset voice files (except Naegi):");
 		miscBtn = new JButton("Confirm");
 
