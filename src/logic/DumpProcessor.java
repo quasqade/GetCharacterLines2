@@ -23,11 +23,12 @@ private int contextAfter;
 private int voiceOffset;
 private boolean onlyVoiced;
 private int maximumSpacing;
+private boolean enableContext;
 private ActionListener workListener;
 private File outputFile;
 
 
-public DumpProcessor(ActionListener workListener, File outputFile, File inputFile, Character character, List<String> linFiles, boolean cleanGenerics, boolean ignoreGenerics, int contextBefore, int contextAfter, int voiceOffset, boolean onlyVoiced, int maximumSpacing)
+public DumpProcessor(ActionListener workListener, File outputFile, File inputFile, Character character, List<String> linFiles, boolean cleanGenerics, boolean ignoreGenerics, int contextBefore, int contextAfter, int voiceOffset, boolean onlyVoiced, int maximumSpacing, boolean enableContext)
 {
 	this.outputFile = outputFile;
 	this.inputFile = inputFile;
@@ -41,6 +42,7 @@ public DumpProcessor(ActionListener workListener, File outputFile, File inputFil
 	this.onlyVoiced = onlyVoiced;
 	this.maximumSpacing = maximumSpacing;
 	this.workListener=workListener;
+	this.enableContext=enableContext;
 }
 
 private String processDump()
@@ -264,38 +266,41 @@ private String processDump()
 
 			List<Integer> blockGroupIDs = new ArrayList<>();
 			blockGroupIDs.add(currentBlockPos);
-			//Start going backwards
-			while (noSelectedCharInARow < maximumSpacing + 1)
+			if (enableContext)
 			{
-				currentBlockPos--;
-				noSelectedCharInARow++;
-				//if (blocks.get(currentBlockPos).character.equals(character))
-				if (linesToDump.contains(currentBlockPos))
+				//Start going backwards
+				while (noSelectedCharInARow < maximumSpacing + 1)
 				{
-					noSelectedCharInARow = 0;
+					currentBlockPos--;
+					noSelectedCharInARow++;
+					//if (blocks.get(currentBlockPos).character.equals(character))
+					if (linesToDump.contains(currentBlockPos))
+					{
+						noSelectedCharInARow = 0;
+					}
+
+					blockGroupIDs.add(currentBlockPos);
 				}
 
-				blockGroupIDs.add(currentBlockPos);
-			}
-
-			blockGroupIDs.remove(new Integer(currentBlockPos));
-			currentBlockPos = i;
-			noSelectedCharInARow = 0;
-			//Same but forwards
-			while (noSelectedCharInARow < maximumSpacing + 1)
-			{
-				currentBlockPos++;
-				noSelectedCharInARow++;
-				//if (blocks.get(currentBlockPos).character.equals(character))
-				if (linesToDump.contains(currentBlockPos))
+				blockGroupIDs.remove(new Integer(currentBlockPos));
+				currentBlockPos = i;
+				noSelectedCharInARow = 0;
+				//Same but forwards
+				while (noSelectedCharInARow < maximumSpacing + 1)
 				{
-					noSelectedCharInARow = 0;
-				}
+					currentBlockPos++;
+					noSelectedCharInARow++;
+					//if (blocks.get(currentBlockPos).character.equals(character))
+					if (linesToDump.contains(currentBlockPos))
+					{
+						noSelectedCharInARow = 0;
+					}
 
-				blockGroupIDs.add(currentBlockPos);
+					blockGroupIDs.add(currentBlockPos);
+				}
+				blockGroupIDs.remove(new Integer(currentBlockPos));
+				Collections.sort(blockGroupIDs);
 			}
-			blockGroupIDs.remove(new Integer(currentBlockPos));
-			Collections.sort(blockGroupIDs);
 			for (int id : blockGroupIDs)
 			{
 				Block block = blocks.get(id);

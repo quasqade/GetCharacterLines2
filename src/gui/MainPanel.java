@@ -275,7 +275,7 @@ public class MainPanel extends JPanel
 
 	private void processFile()
 	{
-		DumpProcessor processorWorker = new DumpProcessor(workListener, outputFile, inputFile, selectedCharacter, selectedChapters, cleanGenericsCB.isSelected(), !outputGenericsCB.isSelected(), 1, 1, (Integer)offsetSpinner.getValue(), onlyVoicedCB.isSelected(), 1);
+		DumpProcessor processorWorker = new DumpProcessor(workListener, outputFile, inputFile, selectedCharacter, selectedChapters, cleanGenericsCB.isSelected(), !outputGenericsCB.isSelected(), 1, 1, (Integer)offsetSpinner.getValue(), onlyVoicedCB.isSelected(), 1, enableContext.isSelected());
 		processorWorker.execute();
 	}
 
