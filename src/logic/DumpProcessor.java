@@ -278,7 +278,7 @@ private String processDump()
 					{
 						noSelectedCharInARow = 0;
 					}
-
+					if (currentBlockPos!=-1) //important for first line in file
 					blockGroupIDs.add(currentBlockPos);
 				}
 
@@ -329,6 +329,10 @@ public static String stripVoice(String block)
 @Override
 protected Boolean doInBackground() throws Exception
 {
+	return executeSingleStream();
+}
+
+public Boolean executeSingleStream() throws Exception{
 	return writeFile(processDump());
 }
 
